@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستم گزارش‌دهی</title>
+    <link rel="stylesheet" href="./css/output.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <!-- نوار بالایی -->
+    <header class="bg-blue-600 text-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-white rounded-full ml-3 flex items-center justify-center">
+                    <span class="text-blue-600 font-bold text-lg">لوگو</span>
+                </div>
+                <h1 class="text-xl font-bold">سیستم گزارش‌دهی</h1>
+            </div>
+            <div class="flex items-center">
+                <div class="flex items-center ml-4">
+                    <img src="./assets/images/user-placeholder.jpg" alt="پروفایل کاربر" class="w-8 h-8 rounded-full ml-2">
+                    <span id="user-name" class="font-medium">نام کاربر</span>
+                </div>
+                <button id="logout-btn" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm transition mr-4">
+                    خروج
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- بخش اصلی -->
+    <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row">
+        <!-- منوی کناری -->
+        <aside class="w-full md:w-64 bg-white shadow-md rounded-lg md:ml-6 h-fit mb-6 md:mb-0">
+            <nav class="p-4">
+                <ul id="menu-list" class="space-y-2">
+                    <!-- منوها بر اساس نقش کاربر به صورت داینامیک پر می‌شوند -->
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- محتوای اصلی -->
+        <main class="flex-1">
+            <div id="content-area" class="bg-white shadow-md rounded-lg p-6">
+                <!-- محتوای داشبورد یا صفحات دیگر در اینجا نمایش داده می‌شود -->
+                <div class="text-center py-12 text-gray-500">
+                    <i class="fas fa-tachometer-alt text-5xl mb-4"></i>
+                    <h2 class="text-2xl font-bold">داشبورد سیستم گزارش‌دهی</h2>
+                    <p class="mt-2">لطفاً از منوی سمت چپ یک گزینه را انتخاب کنید</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="./js/main.js"></script>
+</body>
+</html>
