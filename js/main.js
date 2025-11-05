@@ -36,7 +36,95 @@ const sampleData = {
             createdAt: "2023-02-20"
         },
         {
-            id: 3,
+            id: 2,
+            firstName: "رضا",
+            lastName: "احمدی",
+            email: "reza@example.com",
+            phone: "09129876543",
+            role: "admin",
+            profileImage: "./assets/images/user-placeholder.jpg",
+            status: "active",
+            createdAt: "2023-02-20"
+        },
+        {
+            id: 2,
+            firstName: "رضا",
+            lastName: "احمدی",
+            email: "reza@example.com",
+            phone: "09129876543",
+            role: "admin",
+            profileImage: "./assets/images/user-placeholder.jpg",
+            status: "active",
+            createdAt: "2023-02-20"
+        },
+        {
+            id: 2,
+            firstName: "رضا",
+            lastName: "احمدی",
+            email: "reza@example.com",
+            phone: "09129876543",
+            role: "admin",
+            profileImage: "./assets/images/user-placeholder.jpg",
+            status: "active",
+            createdAt: "2023-02-20"
+        },
+        {
+            id: 5,
+            firstName: "رضا",
+            lastName: "احمدی",
+            email: "reza@example.com",
+            phone: "09129876543",
+            role: "admin",
+            profileImage: "./assets/images/user-placeholder.jpg",
+            status: "active",
+            createdAt: "2023-02-20"
+        },
+        {
+            id: 6,
+            firstName: "رضا",
+            lastName: "احمدی",
+            email: "reza@example.com",
+            phone: "09129876543",
+            role: "admin",
+            profileImage: "./assets/images/user-placeholder.jpg",
+            status: "active",
+            createdAt: "2023-02-20"
+        },
+        {
+            id: 7,
+            firstName: "رضا",
+            lastName: "احمدی",
+            email: "reza@example.com",
+            phone: "09129876543",
+            role: "admin",
+            profileImage: "./assets/images/user-placeholder.jpg",
+            status: "active",
+            createdAt: "2023-02-20"
+        },
+        {
+            id: 8,
+            firstName: "رضا",
+            lastName: "احمدی",
+            email: "reza@example.com",
+            phone: "09129876543",
+            role: "admin",
+            profileImage: "./assets/images/user-placeholder.jpg",
+            status: "active",
+            createdAt: "2023-02-20"
+        },
+        {
+            id: 9,
+            firstName: "رضا",
+            lastName: "احمدی",
+            email: "reza@example.com",
+            phone: "09129876543",
+            role: "admin",
+            profileImage: "./assets/images/user-placeholder.jpg",
+            status: "active",
+            createdAt: "2023-02-20"
+        },
+        {
+            id: 10,
             firstName: "سارا",
             lastName: "کریمی",
             email: "sara@example.com",
@@ -72,6 +160,53 @@ const sampleData = {
         },
         {
             id: 3,
+            userId: 2,
+            userName: "رضا احمدی",
+            title: "گزارش مالی ماهانه",
+            content: "گزارش کامل از وضعیت مالی شرکت...",
+            type: "مالی",
+            status: "rejected",
+            createdAt: "2023-10-25",
+            updatedAt: "2023-10-27"
+        }
+        ,
+        {
+            id: 11,
+            userId: 2,
+            userName: "رضا احمدی",
+            title: "گزارش مالی ماهانه",
+            content: "گزارش کامل از وضعیت مالی شرکت...",
+            type: "مالی",
+            status: "rejected",
+            createdAt: "2023-10-25",
+            updatedAt: "2023-10-27"
+        }
+        ,
+        {
+            id: 12,
+            userId: 2,
+            userName: "رضا احمدی",
+            title: "گزارش مالی ماهانه",
+            content: "گزارش کامل از وضعیت مالی شرکت...",
+            type: "مالی",
+            status: "rejected",
+            createdAt: "2023-10-25",
+            updatedAt: "2023-10-27"
+        },
+        {
+            id: 13,
+            userId: 2,
+            userName: "رضا احمدی",
+            title: "گزارش مالی ماهانه",
+            content: "گزارش کامل از وضعیت مالی شرکت...",
+            type: "مالی",
+            status: "rejected",
+            createdAt: "2023-10-25",
+            updatedAt: "2023-10-27"
+        }
+        ,
+        {
+            id: 14,
             userId: 2,
             userName: "رضا احمدی",
             title: "گزارش مالی ماهانه",
@@ -129,6 +264,20 @@ function checkLoginStatus() {
 // تنظیم منو بر اساس نقش کاربر
 function setupMenu() {
     const menuList = document.getElementById('menu-list');
+    
+    // بررسی وجود المنت
+    if (!menuList) {
+        console.error('Element with id "menu-list" not found');
+        return;
+    }
+    
+    // بررسی وجود کاربر
+    if (!appState.currentUser || !appState.currentUser.role) {
+        console.error('User not authenticated');
+        menuList.innerHTML = '<li>لطفا وارد شوید</li>';
+        return;
+    }
+    
     menuList.innerHTML = '';
     
     // منوهای مشترک برای همه کاربران
@@ -140,21 +289,24 @@ function setupMenu() {
     // منوهای خاص برای هر نقش
     let roleSpecificMenus = [];
     
-    if (appState.currentUser.role === 'superadmin') {
-        roleSpecificMenus = [
-            { id: 'users', icon: 'fas fa-users', text: 'مدیریت کاربران' },
-            { id: 'reports', icon: 'fas fa-file-alt', text: 'گزارشات' },
-            { id: 'admins', icon: 'fas fa-user-shield', text: 'ادمین ها' }
-        ];
-    } else if (appState.currentUser.role === 'admin') {
-        roleSpecificMenus = [
-            { id: 'users', icon: 'fas fa-users', text: 'مدیریت کاربران' },
-            { id: 'reports', icon: 'fas fa-file-alt', text: 'گزارشات' }
-        ];
-    } else {
-        roleSpecificMenus = [
-            { id: 'reports', icon: 'fas fa-file-alt', text: 'گزارشات' }
-        ];
+    switch(appState.currentUser.role) {
+        case 'superadmin':
+            roleSpecificMenus = [
+                { id: 'users', icon: 'fas fa-users', text: 'مدیریت کاربران' },
+                { id: 'reports', icon: 'fas fa-file-alt', text: 'گزارشات' },
+                { id: 'admins', icon: 'fas fa-user-shield', text: 'ادمین ها' }
+            ];
+            break;
+        case 'admin':
+            roleSpecificMenus = [
+                { id: 'users', icon: 'fas fa-users', text: 'مدیریت کاربران' },
+                { id: 'reports', icon: 'fas fa-file-alt', text: 'گزارشات' }
+            ];
+            break;
+        default:
+            roleSpecificMenus = [
+                { id: 'reports', icon: 'fas fa-file-alt', text: 'گزارشات' }
+            ];
     }
     
     // ترکیب منوها
@@ -165,53 +317,110 @@ function setupMenu() {
         const menuItem = document.createElement('li');
         menuItem.className = 'menu-item';
         menuItem.dataset.page = menu.id;
+        menuItem.setAttribute('role', 'menuitem');
+        menuItem.setAttribute('tabindex', '0');
+        
+        // استفاده از textContent برای جلوگیری از XSS
         menuItem.innerHTML = `
-            <i class="${menu.icon}"></i>
-            <span>${menu.text}</span>
+            <i class="${this.escapeHtml(menu.icon)}"></i>
+            <span>${this.escapeHtml(menu.text)}</span>
         `;
+        
+        // اضافه کردن رویداد کلیک و کیبورد
+        menuItem.addEventListener('click', () => this.handleMenuClick(menu.id));
+        menuItem.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.handleMenuClick(menu.id);
+            }
+        });
+        
         menuList.appendChild(menuItem);
     });
     
-    // اضافه کردن رویداد کلیک به منوها
+    // فعال کردن منوی پیش فرض
+    this.activateMenuItem('dashboard');
+}
+
+// هندلر کلیک منو
+function handleMenuClick(pageId) {
+    this.activateMenuItem(pageId);
+    this.navigateToPage(pageId);
+}
+
+// فعال کردن منوی انتخاب شده
+function activateMenuItem(pageId) {
+    // حذف کلاس active از همه منوها
     document.querySelectorAll('.menu-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const page = this.dataset.page;
-            navigateToPage(page);
-        });
+        item.classList.remove('active');
+        item.setAttribute('aria-selected', 'false');
     });
+    
+    // اضافه کردن کلاس active به منوی انتخاب شده
+    const activeMenuItem = document.querySelector(`.menu-item[data-page="${pageId}"]`);
+    if (activeMenuItem) {
+        activeMenuItem.classList.add('active');
+        activeMenuItem.setAttribute('aria-selected', 'true');
+        activeMenuItem.focus();
+    }
 }
 
 // پیمایش بین صفحات
 function navigateToPage(page) {
-    // حذف کلاس active از همه منوها
-    document.querySelectorAll('.menu-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    
-    // اضافه کردن کلاس active به منوی انتخاب شده
-    document.querySelector(`.menu-item[data-page="${page}"]`).classList.add('active');
+    // اعتبارسنجی دسترسی بر اساس نقش
+    if (!this.hasAccessToPage(page)) {
+        console.warn(`User does not have access to page: ${page}`);
+        this.showNotification('شما دسترسی به این صفحه را ندارید', 'error');
+        return;
+    }
     
     // نمایش صفحه مربوطه
-    switch(page) {
-        case 'dashboard':
-            showDashboard();
-            break;
-        case 'users':
-            showUsers();
-            break;
-        case 'reports':
-            showReports();
-            break;
-        case 'admins':
-            showAdmins();
-            break;
-        case 'profile':
-            showProfile();
-            break;
-        default:
-            showDashboard();
-    }
+    const pageHandlers = {
+        'dashboard': () => showDashboard(),
+        'users': () => showUsers(),
+        'reports': () => showReports(),
+        'admins': () => showAdmins(),
+        'profile': () => showProfile()
+    };
+    
+    const handler = pageHandlers[page] || (() => showDashboard());
+    handler();
+    
+    // به روز رسانی history state
+    window.history.pushState({ page }, '', `#${page}`);
 }
+
+// بررسی دسترسی به صفحه
+function hasAccessToPage(page) {
+    const userRole = appState.currentUser?.role;
+    const pagePermissions = {
+        'dashboard': ['superadmin', 'admin', 'user'],
+        'profile': ['superadmin', 'admin', 'user'],
+        'reports': ['superadmin', 'admin', 'user'],
+        'users': ['superadmin', 'admin'],
+        'admins': ['superadmin']
+    };
+    
+    return pagePermissions[page]?.includes(userRole) || false;
+}
+
+// جلوگیری از XSS
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+// هندلر تغییر رویداد popstate برای پشتیبانی از دکمه بازگشت مرورگر
+window.addEventListener('popstate', (event) => {
+    if (event.state && event.state.page) {
+        activateMenuItem(event.state.page);
+        navigateToPage(event.state.page);
+    }
+});
 
 // نمایش داشبورد
 function showDashboard() {
