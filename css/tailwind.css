@@ -78,7 +78,7 @@ body {
 }
 
 .btn-primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
+  @apply bg-gray-600 text-white hover:bg-gray-700 focus:ring-blue-500;
 }
 
 .btn-success {
