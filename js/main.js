@@ -236,6 +236,9 @@ function initializeApp() {
     // بررسی وضعیت ورود کاربر
     checkLoginStatus();
     
+    // بررسی اگر از صفحه ثبت‌نام برگشته‌ایم
+    checkReturnFromRegistration();
+    
     // تنظیم منو بر اساس نقش کاربر
     setupMenu();
     
@@ -258,6 +261,23 @@ function checkLoginStatus() {
     } else {
         // اگر کاربر لاگین نکرده باشد، به صفحه ورود هدایت می‌شود
         window.location.href = 'login.html';
+    }
+}
+// بررسی بازگشت از صفحه ثبت‌نام
+function checkReturnFromRegistration() {
+    const returnToPage = localStorage.getItem('returnToPage');
+    
+    if (returnToPage) {
+        const state = JSON.parse(returnToPage);
+        
+        // اگر از صفحه ثبت‌نام برگشته‌ایم و زمان معقولی گذشته
+        if (state.page === 'users' && Date.now() - state.timestamp < 300000) { // 5 دقیقه
+            // نمایش صفحه کاربران
+            showUsers();
+            
+            // پاک کردن اطلاعات بازگشت
+            localStorage.removeItem('returnToPage');
+        }
     }
 }
 
@@ -516,7 +536,7 @@ function showUsers() {
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800">مدیریت کاربران</h2>
                 ${appState.currentUser.role !== 'user' ? `
-                    <button id="add-user-btn" class="btn btn-primary">
+                    <button id="add-user-btn" class="btn btn-primary" onclick="goToRegistrationPage()">
                         <i class="fas fa-plus mr-2"></i>
                         افزودن کاربر
                     </button>
@@ -620,6 +640,19 @@ function showUsers() {
     
     // اضافه کردن رویدادها به دکمه‌های عملیات
     setupUserActionListeners();
+}
+
+// تابع انتقال به صفحه ثبت‌نام
+function goToRegistrationPage() {
+    // ذخیره اطلاعات فعلی برای بازگشت
+    const currentState = {
+        page: 'users',
+        timestamp: Date.now()
+    };
+    localStorage.setItem('returnToPage', JSON.stringify(currentState));
+    
+    // انتقال به صفحه ثبت‌نام
+    window.location.href = 'register.html';
 }
 
 // نمایش گزارشات
@@ -832,126 +865,69 @@ function showAdmins() {
 }
 
 // نمایش پروفایل کاربر
-function showUsers() {
+function showProfile() {
     const contentArea = document.getElementById('content-area');
-    
-    // فیلتر کردن کاربران بر اساس نقش کاربر فعلی
-    let usersToShow = [...sampleData.users];
-    
-    if (appState.currentUser.role === 'admin') {
-        // ادمین فقط کاربران ساده را می‌بیند
-        usersToShow = usersToShow.filter(user => user.role === 'user');
-    }
+    const user = appState.currentUser;
     
     contentArea.innerHTML = `
-        <div class="fade-in ">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-800">مدیریت کاربران</h2>
-                ${appState.currentUser.role !== 'user' ? `
-                    <button id="add-user-btn" class="btn btn-primary" onclick="goToRegistrationPage()">
-                        <i class="fas fa-plus mr-2"></i>
-                        افزودن کاربر
-                    </button>
-                ` : ''}
-            </div>
+        <div class="fade-in">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">پروفایل کاربر</h2>
             
-            <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                <div class="p-4 border-b border-gray-200 flex flex-col md:flex-row md:items-center md:justify-between">
-                    <div class="mb-4 md:mb-0">
-                        <input type="text" id="user-search" placeholder="جستجوی کاربر..." 
-                            class="form-input w-full md:w-64">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex flex-col md:flex-row items-startn  space-y-6 space-x-6 md:space-y-0 ml:space-x-6">
+                    <div class="flex-shrink-0">
+                        <div class="relative">
+                            <img src="${user.profileImage}" alt="${user.firstName} ${user.lastName}" 
+                                class="w-32 h-32 rounded-full object-cover border-4 border-blue-100">
+                            <button class="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex space-x-2">
-                        <select id="user-role-filter" class="form-input w-full md:w-auto">
-                            <option value="">همه نقش‌ها</option>
-                            <option value="superadmin">سوپر ادمین</option>
-                            <option value="admin">ادمین</option>
-                            <option value="user">کاربر ساده</option>
-                        </select>
-                        <select id="user-status-filter" class="form-input w-full md:w-auto">
-                            <option value="">همه وضعیت‌ها</option>
-                            <option value="active">فعال</option>
-                            <option value="inactive">غیرفعال</option>
-                            <option value="pending">در انتظار</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>نام کاربر</th>
-                                <th>ایمیل</th>
-                                <th>شماره تماس</th>
-                                <th>نقش</th>
-                                <th>وضعیت</th>
-                                <th>تاریخ عضویت</th>
-                                <th>عملیات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${usersToShow.map(user => `
-                                <tr>
-                                    <td>
-                                        <div class="flex items-center">
-                                            <img src="${user.profileImage}" alt="${user.firstName} ${user.lastName}" 
-                                                class="w-8 h-8 rounded-full mr-3">
-                                            <span>${user.firstName} ${user.lastName}</span>
-                                        </div>
-                                    </td>
-                                    <td>${user.email}</td>
-                                    <td>${user.phone}</td>
-                                    <td>${getRoleText(user.role)}</td>
-                                    <td>
-                                        <span class="status-${user.status}">
-                                            ${getUserStatusText(user.status)}
-                                        </span>
-                                    </td>
-                                    <td>${user.createdAt}</td>
-                                    <td>
-                                        <div class="flex space-x-2">
-                                            <button class="text-blue-600 hover:text-blue-800 view-user" data-id="${user.id}">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            ${appState.currentUser.role === 'superadmin' || (appState.currentUser.role === 'admin' && user.role === 'user') ? `
-                                                <button class="text-yellow-600 hover:text-yellow-800 edit-user" data-id="${user.id}">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button class="text-red-600 hover:text-red-800 delete-user" data-id="${user.id}">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            ` : ''}
-                                        </div>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="p-4 border-t border-gray-200 flex justify-between items-center">
-                    <div class="text-sm text-gray-500">
-                        نمایش ${usersToShow.length} از ${usersToShow.length} کاربر
-                    </div>
-                    <div class="flex space-x-2">
-                        <button class="px-3 py-1 bg-gray-200 rounded-md text-gray-700 disabled:opacity-50" disabled>
-                            قبلی
-                        </button>
-                        <button class="px-3 py-1 bg-blue-600 text-white rounded-md">
-                            1
-                        </button>
-                        <button class="px-3 py-1 bg-gray-200 rounded-md text-gray-700 disabled:opacity-50" disabled>
-                            بعدی
-                        </button>
+                    
+                    <div class="flex-1">
+                        <form id="profile-form">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                
+                                
+                                <div class="form-group">
+                                    <label for="profile-email" class="form-label">ایمیل</label>
+                                    <input type="email" id="profile-email" class="form-input" value="${user.email}">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="profile-phone" class="form-label">شماره موبایل</label>
+                                    <input type="tel" id="profile-phone" class="form-input" value="${user.phone}">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="profile-password" class="form-label">رمز عبور جدید</label>
+                                    <input type="password" id="profile-password" class="form-input" placeholder="در صورت تمایل به تغییر وارد کنید">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="profile-confirmPassword" class="form-label">تکرار رمز عبور</label>
+                                    <input type="password" id="profile-confirmPassword" class="form-input" placeholder="تکرار رمز عبور جدید">
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 flex justify-end">
+                                <button type="submit" class="btn btn-primary">
+                                    ذخیره تغییرات
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     `;
     
-    // اضافه کردن رویدادها به دکمه‌های عملیات
-    setupUserActionListeners();
+    // اضافه کردن رویداد به فرم پروفایل
+    document.getElementById('profile-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('تغییرات با موفقیت ذخیره شد!');
+    });
 }
 
 // تنظیم رویدادهای کلی برنامه

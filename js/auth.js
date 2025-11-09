@@ -139,6 +139,7 @@ async function authenticateUser(email, password) {
 }
 
 // مدیریت ثبت‌نام - نسخه ایمن
+// مدیریت ثبت‌نام - نسخه اصلاح شده
 async function handleRegister(e) {
     e.preventDefault();
     
@@ -162,13 +163,24 @@ async function handleRegister(e) {
         if (registerResult.success) {
             showSuccess('ثبت‌نام با موفقیت انجام شد!');
             
-            // پاک کردن فرم
-            document.getElementById('register-form').reset();
+            // بررسی اگر از صفحه مدیریت کاربران آمده‌ایم
+            const returnToPage = localStorage.getItem('returnToPage');
             
-            // هدایت به صفحه ورود پس از تاخیر
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 2000);
+            if (returnToPage) {
+                // پاک کردن اطلاعات بازگشت
+                localStorage.removeItem('returnToPage');
+                
+                // بازگشت به صفحه مدیریت کاربران
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+            } else {
+                // هدایت به صفحه ورود
+                document.getElementById('register-form').reset();
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+            }
             
         } else {
             showError(registerResult.message);

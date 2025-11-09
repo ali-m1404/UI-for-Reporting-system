@@ -84,5 +84,34 @@
     </div>
 
     <script src="./js/auth.js"></script>
+    <!-- در register.html -->
+<script>
+// بررسی اگر کاربر از صفحه مدیریت کاربران آمده
+document.addEventListener('DOMContentLoaded', function() {
+    const returnToPage = localStorage.getItem('returnToPage');
+    
+    if (returnToPage) {
+        // نمایش دکمه بازگشت به مدیریت کاربران
+        const backButton = document.createElement('button');
+        backButton.className = 'btn btn-secondary mb-4';
+        backButton.innerHTML = '<i class="fas fa-arrow-right ml-2"></i> بازگشت به مدیریت کاربران';
+        backButton.onclick = function() {
+            localStorage.removeItem('returnToPage');
+            window.location.href = 'index.html';
+        };
+        
+        // اضافه کردن دکمه به بالای فرم
+        const formContainer = document.querySelector('.container');
+        formContainer.insertBefore(backButton, formContainer.firstChild);
+        
+        // تغییر عنوان صفحه
+        document.title = 'ثبت‌نام کاربر جدید - سیستم گزارش‌دهی';
+        const pageTitle = document.querySelector('h2');
+        if (pageTitle) {
+            pageTitle.textContent = 'ثبت‌نام کاربر جدید';
+        }
+    }
+});
+</script>
 </body>
 </html>
