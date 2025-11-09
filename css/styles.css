@@ -11,7 +11,7 @@ body {
 
 /* استایل‌های سفارشی برای منو */
 .menu-item {
-    @apply flex items-center px-4 py-3 text-gray-700 rounded-lg transition text-right;
+    @apply flex items-center px-4 py-3 text-gray-700 rounded-lg transition text-right gap-3;
 }
 
 .menu-item:hover {
@@ -23,7 +23,7 @@ body {
 }
 
 .menu-item i {
-    @apply mr-3 text-lg;
+    @apply mr-4 text-lg gap-3; /* ✅ تغییر داده شد */
 }
 
 /* استایل‌های کارت‌ها */

@@ -1,6 +1,5 @@
 @import "tailwindcss";
-@tailwind base;
-@tailwind components;
+
 @tailwind utilities;
 
 /* فونت فارسی */
@@ -139,3 +138,63 @@ body {
   from { transform: translateX(-20px); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 }
+
+
+
+/* فونت فارسی  */
+
+/* فونت Vazirmatn - نصب محلی */
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('../fonts/Vazirmatn-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('../fonts/Vazirmatn-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('../fonts/Vazirmatn-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* استایل‌های پایه برای RTL */
+html {
+  direction: rtl;
+}
+
+body {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Vazirmatn', sans-serif;
+  font-weight: normal;
+}
+
+/* بقیه استایل‌های سفارشی شما... */
+.menu-item {
+  @apply flex items-center px-4 py-3 text-gray-700 rounded-lg transition text-right gap-3;
+}
+
+.menu-item:hover {
+  @apply bg-blue-50 text-blue-600;
+}
+
+.menu-item.active {
+  @apply bg-blue-100 text-blue-600 font-medium;
+}
+
+.menu-item i {
+  @apply mr-3 text-lg;
+}
+
+/* بقیه استایل‌ها... */

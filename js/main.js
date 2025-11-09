@@ -264,82 +264,59 @@ function checkLoginStatus() {
 // تنظیم منو بر اساس نقش کاربر
 function setupMenu() {
     const menuList = document.getElementById('menu-list');
-    
-    // بررسی وجود المنت
-    if (!menuList) {
-        console.error('Element with id "menu-list" not found');
-        return;
-    }
-    
-    // بررسی وجود کاربر
-    if (!appState.currentUser || !appState.currentUser.role) {
-        console.error('User not authenticated');
-        menuList.innerHTML = '<li>لطفا وارد شوید</li>';
-        return;
-    }
-    
     menuList.innerHTML = '';
     
-    // منوهای مشترک برای همه کاربران
-    const commonMenus = [
-        { id: 'dashboard', icon: 'fas fa-tachometer-alt', text: 'صفحه اصلی' },
+    // منوهای اصلی (بدون profile)
+    const mainMenus = [
+        { id: 'dashboard', icon: 'fas fa-tachometer-alt', text: 'صفحه اصلی' }
+    ];
+    
+    let roleSpecificMenus = [];
+    
+    if (appState.currentUser.role === 'superadmin') {
+        roleSpecificMenus = [
+            { id: 'users', icon: 'fas fa-users', text: 'مدیریت کاربران' },
+            { id: 'reports', icon: 'fas fa-file-alt', text: 'گزارشات' },
+            { id: 'admins', icon: 'fas fa-user-shield', text: 'ادمین ها' }
+        ];
+    } else if (appState.currentUser.role === 'admin') {
+        roleSpecificMenus = [
+            { id: 'users', icon: 'fas fa-users', text: 'مدیریت کاربران' },
+            { id: 'reports', icon: 'fas fa-file-alt', text: 'گزارشات' }
+        ];
+    } else {
+        roleSpecificMenus = [
+            { id: 'reports', icon: 'fas fa-file-alt', text: 'گزارشات' }
+        ];
+    }
+    
+    // منوی profile که همیشه آخر می‌آید
+    const profileMenu = [
         { id: 'profile', icon: 'fas fa-user', text: 'پروفایل' }
     ];
     
-    // منوهای خاص برای هر نقش
-    let roleSpecificMenus = [];
+    // ترکیب: اول منوهای اصلی، سپس منوهای نقش، در انتها profile
+    const allMenus = [...mainMenus, ...roleSpecificMenus,...profileMenu];
     
-    switch(appState.currentUser.role) {
-        case 'superadmin':
-            roleSpecificMenus = [
-                { id: 'users', icon: 'fas fa-users', text: 'مدیریت کاربران' },
-                { id: 'reports', icon: 'fas fa-file-alt', text: 'گزارشات' },
-                { id: 'admins', icon: 'fas fa-user-shield', text: 'ادمین ها' }
-            ];
-            break;
-        case 'admin':
-            roleSpecificMenus = [
-                { id: 'users', icon: 'fas fa-users', text: 'مدیریت کاربران' },
-                { id: 'reports', icon: 'fas fa-file-alt', text: 'گزارشات' }
-            ];
-            break;
-        default:
-            roleSpecificMenus = [
-                { id: 'reports', icon: 'fas fa-file-alt', text: 'گزارشات' }
-            ];
-    }
-    
-    // ترکیب منوها
-    const allMenus = [...commonMenus, ...roleSpecificMenus];
-    
-    // ایجاد منوها در DOM
+    // ایجاد منوها
     allMenus.forEach(menu => {
         const menuItem = document.createElement('li');
         menuItem.className = 'menu-item';
         menuItem.dataset.page = menu.id;
-        menuItem.setAttribute('role', 'menuitem');
-        menuItem.setAttribute('tabindex', '0');
-        
-        // استفاده از textContent برای جلوگیری از XSS
         menuItem.innerHTML = `
-            <i class="${this.escapeHtml(menu.icon)}"></i>
-            <span>${this.escapeHtml(menu.text)}</span>
+            <i class="${menu.icon}"></i>
+            <span>${menu.text}</span>
         `;
-        
-        // اضافه کردن رویداد کلیک و کیبورد
-        menuItem.addEventListener('click', () => this.handleMenuClick(menu.id));
-        menuItem.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                this.handleMenuClick(menu.id);
-            }
-        });
-        
         menuList.appendChild(menuItem);
     });
     
-    // فعال کردن منوی پیش فرض
-    this.activateMenuItem('dashboard');
+    // اضافه کردن رویداد کلیک
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const page = this.dataset.page;
+            navigateToPage(page);
+        });
+    });
 }
 
 // هندلر کلیک منو
@@ -535,7 +512,7 @@ function showUsers() {
     }
     
     contentArea.innerHTML = `
-        <div class="fade-in">
+        <div class="fade-in ">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800">مدیریت کاربران</h2>
                 ${appState.currentUser.role !== 'user' ? `
@@ -855,77 +832,126 @@ function showAdmins() {
 }
 
 // نمایش پروفایل کاربر
-function showProfile() {
+function showUsers() {
     const contentArea = document.getElementById('content-area');
-    const user = appState.currentUser;
+    
+    // فیلتر کردن کاربران بر اساس نقش کاربر فعلی
+    let usersToShow = [...sampleData.users];
+    
+    if (appState.currentUser.role === 'admin') {
+        // ادمین فقط کاربران ساده را می‌بیند
+        usersToShow = usersToShow.filter(user => user.role === 'user');
+    }
     
     contentArea.innerHTML = `
-        <div class="fade-in">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">پروفایل کاربر</h2>
+        <div class="fade-in ">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">مدیریت کاربران</h2>
+                ${appState.currentUser.role !== 'user' ? `
+                    <button id="add-user-btn" class="btn btn-primary" onclick="goToRegistrationPage()">
+                        <i class="fas fa-plus mr-2"></i>
+                        افزودن کاربر
+                    </button>
+                ` : ''}
+            </div>
             
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <div class="flex flex-col md:flex-row items-start space-y-6 md:space-y-0 md:space-x-6">
-                    <div class="flex-shrink-0">
-                        <div class="relative">
-                            <img src="${user.profileImage}" alt="${user.firstName} ${user.lastName}" 
-                                class="w-32 h-32 rounded-full object-cover border-4 border-blue-100">
-                            <button class="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full">
-                                <i class="fas fa-camera"></i>
-                            </button>
-                        </div>
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-4 border-b border-gray-200 flex flex-col md:flex-row md:items-center md:justify-between">
+                    <div class="mb-4 md:mb-0">
+                        <input type="text" id="user-search" placeholder="جستجوی کاربر..." 
+                            class="form-input w-full md:w-64">
                     </div>
-                    
-                    <div class="flex-1">
-                        <form id="profile-form">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="form-group">
-                                    <label for="profile-firstName" class="form-label">نام</label>
-                                    <input type="text" id="profile-firstName" class="form-input" value="${user.firstName}">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="profile-lastName" class="form-label">نام خانوادگی</label>
-                                    <input type="text" id="profile-lastName" class="form-input" value="${user.lastName}">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="profile-email" class="form-label">ایمیل</label>
-                                    <input type="email" id="profile-email" class="form-input" value="${user.email}">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="profile-phone" class="form-label">شماره موبایل</label>
-                                    <input type="tel" id="profile-phone" class="form-input" value="${user.phone}">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="profile-password" class="form-label">رمز عبور جدید</label>
-                                    <input type="password" id="profile-password" class="form-input" placeholder="در صورت تمایل به تغییر وارد کنید">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="profile-confirmPassword" class="form-label">تکرار رمز عبور</label>
-                                    <input type="password" id="profile-confirmPassword" class="form-input" placeholder="تکرار رمز عبور جدید">
-                                </div>
-                            </div>
-                            
-                            <div class="mt-6 flex justify-end">
-                                <button type="submit" class="btn btn-primary">
-                                    ذخیره تغییرات
-                                </button>
-                            </div>
-                        </form>
+                    <div class="flex space-x-2">
+                        <select id="user-role-filter" class="form-input w-full md:w-auto">
+                            <option value="">همه نقش‌ها</option>
+                            <option value="superadmin">سوپر ادمین</option>
+                            <option value="admin">ادمین</option>
+                            <option value="user">کاربر ساده</option>
+                        </select>
+                        <select id="user-status-filter" class="form-input w-full md:w-auto">
+                            <option value="">همه وضعیت‌ها</option>
+                            <option value="active">فعال</option>
+                            <option value="inactive">غیرفعال</option>
+                            <option value="pending">در انتظار</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>نام کاربر</th>
+                                <th>ایمیل</th>
+                                <th>شماره تماس</th>
+                                <th>نقش</th>
+                                <th>وضعیت</th>
+                                <th>تاریخ عضویت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${usersToShow.map(user => `
+                                <tr>
+                                    <td>
+                                        <div class="flex items-center">
+                                            <img src="${user.profileImage}" alt="${user.firstName} ${user.lastName}" 
+                                                class="w-8 h-8 rounded-full mr-3">
+                                            <span>${user.firstName} ${user.lastName}</span>
+                                        </div>
+                                    </td>
+                                    <td>${user.email}</td>
+                                    <td>${user.phone}</td>
+                                    <td>${getRoleText(user.role)}</td>
+                                    <td>
+                                        <span class="status-${user.status}">
+                                            ${getUserStatusText(user.status)}
+                                        </span>
+                                    </td>
+                                    <td>${user.createdAt}</td>
+                                    <td>
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-800 view-user" data-id="${user.id}">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            ${appState.currentUser.role === 'superadmin' || (appState.currentUser.role === 'admin' && user.role === 'user') ? `
+                                                <button class="text-yellow-600 hover:text-yellow-800 edit-user" data-id="${user.id}">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-600 hover:text-red-800 delete-user" data-id="${user.id}">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            ` : ''}
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="p-4 border-t border-gray-200 flex justify-between items-center">
+                    <div class="text-sm text-gray-500">
+                        نمایش ${usersToShow.length} از ${usersToShow.length} کاربر
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 bg-gray-200 rounded-md text-gray-700 disabled:opacity-50" disabled>
+                            قبلی
+                        </button>
+                        <button class="px-3 py-1 bg-blue-600 text-white rounded-md">
+                            1
+                        </button>
+                        <button class="px-3 py-1 bg-gray-200 rounded-md text-gray-700 disabled:opacity-50" disabled>
+                            بعدی
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     `;
     
-    // اضافه کردن رویداد به فرم پروفایل
-    document.getElementById('profile-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        alert('تغییرات با موفقیت ذخیره شد!');
-    });
+    // اضافه کردن رویدادها به دکمه‌های عملیات
+    setupUserActionListeners();
 }
 
 // تنظیم رویدادهای کلی برنامه

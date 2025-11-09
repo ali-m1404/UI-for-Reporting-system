@@ -9,7 +9,11 @@
 </head>
 <body class="bg-gray-100">
     <!-- نوار بالایی -->
+    
     <header class="bg-blue-600 text-white shadow-md">
+        <!-- 
+       class="container mx-auto px-4 py-3 flex justify-between items-center"
+        -->
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center">
                 <div class="w-10 h-10 bg-white rounded-full ml-3 flex items-center justify-center">
@@ -30,14 +34,22 @@
     </header>
 
     <!-- بخش اصلی -->
-    <div class="container mx-2.5 px-0.5 py-6 flex flex-col md:flex-row">
+    <!--90% with   / container mx-auto px-4 py-6 w-11/12   /--> 
+    <!-- main style   class="container mx-auto px-4 py-6 w-full flex flex-col md:flex-row" -->
+    <div class="mx-auto px-0.5 py-6 w-11/12 flex flex-col md:flex-row">
         <!-- منوی کناری -->
-        <aside class="w-full md:w-72 bg-white shadow-md rounded-lg md:ml-6 h-screen mb-6 md:mb-0">
-            <nav class="p-4">
-                <ul id="menu-list" class="space-y-2">
-                    <!-- منوها بر اساس نقش کاربر به صورت داینامیک پر می‌شوند -->
-                </ul>
-            </nav>
+        <aside class="min-h-screen flex flex-col w-full md:w-72 bg-white shadow-md rounded-lg md:ml-6 mb-6 md:mb-0">
+                    <div class="relative shrink-0 items-center mx-auto h-55 w-55 bg-transparent shadow-xl/30 rounded-md">
+                        <img src="./images/OIP (1).webp" alt="پروفایل کاربر" class=" w-32 h-32 m-auto rounded-full relative my-3">
+                        <div class="group  w-40 h-9 m-auto flex items-center rounded-md bg-transparent mt-4 border b-black hover:bg-blue-200 hover:border-none hover:cursor-pointer">
+                            <span id="user-name" class="group-hover:text-blue-500 font-bold mr-4">نام کاربر</span>
+                        </div>
+                    </div>
+                    <nav class="p-4 flex-1 overflow-y-auto">
+                        <ul id="menu-list" class="space-y-2">
+                            <!-- منوها بر اساس نقش کاربر به صورت داینامیک پر می‌شوند -->
+                        </ul>
+                    </nav>
         </aside>
 
         <!-- محتوای اصلی -->
